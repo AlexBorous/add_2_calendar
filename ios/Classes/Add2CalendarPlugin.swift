@@ -144,8 +144,19 @@ public class Add2CalendarPlugin: NSObject, FlutterPlugin {
         if #available(iOS 13, *) {
             eventModalVC.modalPresentationStyle = .fullScreen
         }
-        
-        if let root = UIApplication.shared.keyWindow?.rootViewController {
+        var keyWindow: UIWindow? {
+        let allScenes = UIApplication.shared.connectedScenes
+        for scene in allScenes {
+            if let windowScene = scene as? UIWindowScene,
+                scene.activationState == .foregroundActive {
+                return windowScene.windows.first(where: { $0.isKeyWindow })
+            }
+        }
+        return nil
+        }
+
+        let rootViewController = keyWindow?.rootViewController
+        if let root = rootViewController {
             root.present(eventModalVC, animated: true, completion: {
                 statusBarStyle = UIApplication.shared.statusBarStyle
                 UIApplication.shared.statusBarStyle = UIStatusBarStyle.default
